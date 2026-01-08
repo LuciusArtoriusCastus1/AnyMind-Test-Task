@@ -10,8 +10,6 @@
 #   docker-compose logs -f api    # View API logs
 #   docker-compose exec db psql -U postgres -d anymind_pos  # Connect to DB
 
-version: '3.8'
-
 services:
   # PostgreSQL Database Service
   db:

@@ -13,9 +13,7 @@ Model Design Decisions:
 """
 
 import enum
-from datetime import datetime
-from decimal import Decimal
-from typing import Optional
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -24,7 +22,6 @@ from sqlalchemy import (
     DateTime,
     Enum,
     JSON,
-    Index,
 )
 from sqlalchemy.sql import func
 
@@ -103,19 +100,12 @@ class Payment(Base):
     additional_item = Column(JSON, nullable=True)
 
     # Timestamps
+    # datetime column is indexed for efficient time-range queries in sales reports
     datetime = Column(DateTime(timezone=True), nullable=False, index=True)
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False
-    )
-
-    # Create composite index for efficient hourly sales aggregation
-    __table_args__ = (
-        Index(
-            "ix_payment_datetime_hourly",
-            func.date_trunc("hour", datetime),
-        ),
     )
 
     def __repr__(self) -> str:

@@ -73,26 +73,11 @@ class AdditionalItemInput:
     - CHEQUE: Requires bank and cheque_number
     """
 
-    last4: Optional[str] = strawberry.field(
-        default=None,
-        description="Last 4 digits of card (required for card payments)"
-    )
-    courier: Optional[str] = strawberry.field(
-        default=None,
-        description="Courier service name (required for CASH_ON_DELIVERY: YAMATO or SAGAWA)"
-    )
-    bank: Optional[str] = strawberry.field(
-        default=None,
-        description="Bank name (required for BANK_TRANSFER and CHEQUE)"
-    )
-    account_number: Optional[str] = strawberry.field(
-        default=None,
-        description="Bank account number (required for BANK_TRANSFER)"
-    )
-    cheque_number: Optional[str] = strawberry.field(
-        default=None,
-        description="Cheque number (required for CHEQUE)"
-    )
+    last4: Optional[str] = None
+    courier: Optional[str] = None
+    bank: Optional[str] = None
+    account_number: Optional[str] = None
+    cheque_number: Optional[str] = None
 
 
 @strawberry.input(description="Input for processing a payment")
@@ -111,25 +96,12 @@ class PaymentInput:
     }
     """
 
-    customer_id: str = strawberry.field(
-        description="Unique identifier for the customer"
-    )
-    price: str = strawberry.field(
-        description="Original price as a string with 2 decimal places (e.g., '100.00')"
-    )
-    price_modifier: float = strawberry.field(
-        description="Price modifier to apply (e.g., 0.95 for 5% discount)"
-    )
-    payment_method: PaymentMethodEnum = strawberry.field(
-        description="Payment method to use"
-    )
-    datetime: datetime = strawberry.field(
-        description="Transaction datetime in ISO 8601 format"
-    )
-    additional_item: Optional[AdditionalItemInput] = strawberry.field(
-        default=None,
-        description="Additional payment-specific information"
-    )
+    customer_id: str
+    price: str
+    price_modifier: float
+    payment_method: PaymentMethodEnum
+    datetime: datetime
+    additional_item: Optional[AdditionalItemInput] = None
 
 
 @strawberry.input(description="Input for querying sales report")
@@ -140,12 +112,8 @@ class SalesReportInput:
     Specifies a date range for aggregating hourly sales data.
     """
 
-    start_datetime: datetime = strawberry.field(
-        description="Start of the date range (inclusive)"
-    )
-    end_datetime: datetime = strawberry.field(
-        description="End of the date range (inclusive)"
-    )
+    start_datetime: datetime
+    end_datetime: datetime
 
 
 # ============================================================================
