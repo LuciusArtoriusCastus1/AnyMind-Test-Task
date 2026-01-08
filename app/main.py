@@ -17,10 +17,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
+from strawberry.extensions import SchemaExtension
+import strawberry
 
 from app.config import get_settings
 from app.database import init_db, close_db, AsyncSessionLocal
-from app.graphql import schema
+from app.graphql.queries import Query
+from app.graphql.mutations import Mutation
 
 settings = get_settings()
 
@@ -44,19 +47,52 @@ async def lifespan(app: FastAPI):
     await close_db()
 
 
+class SQLAlchemySessionExtension(SchemaExtension):
+    """
+    Strawberry extension for managing SQLAlchemy async session lifecycle.
+
+    This extension ensures that:
+    1. A database session is created for each request
+    2. The session is committed on success
+    3. The session is rolled back on error
+    4. The session is properly closed after the request
+    """
+
+    async def on_request_start(self):
+        session = AsyncSessionLocal()
+        self.execution_context.context["db"] = session
+
+    async def on_request_end(self):
+        db = self.execution_context.context.get("db")
+        if db:
+            try:
+                await db.commit()
+            except Exception:
+                await db.rollback()
+                raise
+            finally:
+                await db.close()
+
+
 async def get_context(request: Request) -> dict:
     """
     Create GraphQL context for each request.
 
     The context is passed to all resolvers and contains:
-    - db: Database session for this request
+    - request: The FastAPI request object
+    - db: Will be populated by SQLAlchemySessionExtension
 
     This enables dependency injection pattern in GraphQL resolvers.
-    Using async session that will be committed/rolled back automatically.
     """
-    async with AsyncSessionLocal() as session:
-        return {"request": request, "db": session}
+    return {"request": request}
 
+
+# Create the GraphQL schema with session management extension
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation,
+    extensions=[SQLAlchemySessionExtension],
+)
 
 # Create GraphQL router with Strawberry
 # graphiql=True enables the interactive GraphQL playground
