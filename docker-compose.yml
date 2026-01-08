@@ -1,0 +1,60 @@
+# Docker Compose Configuration for AnyMind POS Payment System
+#
+# This configuration includes:
+# - PostgreSQL database
+# - FastAPI application
+#
+# Usage:
+#   docker-compose up -d          # Start all services
+#   docker-compose down           # Stop all services
+#   docker-compose logs -f api    # View API logs
+#   docker-compose exec db psql -U postgres -d anymind_pos  # Connect to DB
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: anymind_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: anymind_pos
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Application Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anymind_api
+    restart: unless-stopped
+    environment:
+      # Database connection string
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/anymind_pos
+      DEBUG: "false"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Named volume for persistent database storage
+volumes:
+  postgres_data:
