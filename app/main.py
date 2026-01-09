@@ -40,10 +40,8 @@ async def lifespan(app: FastAPI):
     Using the modern lifespan context manager pattern instead of
     deprecated on_event decorators.
     """
-    # Startup: Initialize database
     await init_db()
     yield
-    # Shutdown: Close database connections
     await close_db()
 
 
@@ -128,17 +126,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Add CORS middleware for cross-origin requests
-# In production, restrict origins to specific domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include the GraphQL router
 app.include_router(graphql_router, prefix="/graphql")
 
 

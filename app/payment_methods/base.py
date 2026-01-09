@@ -151,11 +151,9 @@ class BasePaymentMethod(ABC):
         Raises:
             PaymentMethodError: If any validation fails
         """
-        # Validate inputs
         self.validate_price_modifier(price_modifier)
         validated_additional_item = self.validate_additional_item(additional_item)
 
-        # Calculate results
         final_price = self.calculate_final_price(price, price_modifier)
         points = self.calculate_points(price)
 

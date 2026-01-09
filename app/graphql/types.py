@@ -176,21 +176,6 @@ class SalesReportResponse:
 # Error Types
 # ============================================================================
 
-@strawberry.type(description="Error field information")
-class ErrorField:
-    """
-    Detailed information about which field caused an error.
-
-    Helps clients identify and fix input problems.
-    """
-
-    field: Optional[str] = strawberry.field(
-        description="The field that caused the error (if applicable)"
-    )
-    message: str = strawberry.field(
-        description="Human-readable error message"
-    )
-
 
 @strawberry.type(description="Error response")
 class ErrorResponse:
@@ -213,14 +198,12 @@ class ErrorResponse:
     )
 
 
-# Union type for payment mutation result
 PaymentResult = strawberry.union(
     "PaymentResult",
     types=[PaymentResponse, ErrorResponse],
     description="Result of a payment operation - either success or error"
 )
 
-# Union type for sales report result
 SalesReportResult = strawberry.union(
     "SalesReportResult",
     types=[SalesReportResponse, ErrorResponse],

@@ -2,7 +2,7 @@
 GraphQL Mutations
 
 This module defines GraphQL mutations for the payment system.
-Currently contains the payment processing mutation.
+Currently, contains the payment processing mutation.
 
 Mutations in GraphQL represent operations that modify data.
 In this case, processing a payment creates a new payment record.
@@ -55,7 +55,7 @@ class Mutation:
     """
     GraphQL Mutation type containing all mutation operations.
 
-    Currently supports:
+    Currently, supports:
     - createPayment: Process a payment transaction
     """
 
@@ -104,17 +104,13 @@ class Mutation:
                 }
             }
         """
-        # Get database session from context
         db = info.context["db"]
 
-        # Create service instance
         service = PaymentService(db)
 
         try:
-            # Convert additional item to dict
             additional_item_dict = convert_additional_item_to_dict(input.additional_item)
 
-            # Process the payment
             result = await service.process_payment(
                 customer_id=input.customer_id,
                 price=input.price,
@@ -124,22 +120,18 @@ class Mutation:
                 additional_item=additional_item_dict,
             )
 
-            # Return success response
             return PaymentResponse(
                 final_price=result["final_price"],
                 points=result["points"],
             )
 
         except PaymentServiceError as e:
-            # Return structured error response
             return ErrorResponse(
                 error="VALIDATION_ERROR",
                 message=e.message,
                 field=e.field,
             )
         except Exception as e:
-            # Catch unexpected errors and return generic error
-            # In production, log this error for debugging
             return ErrorResponse(
                 error="INTERNAL_ERROR",
                 message="An unexpected error occurred while processing the payment",

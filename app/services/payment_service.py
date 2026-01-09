@@ -94,14 +94,12 @@ class PaymentService:
         Raises:
             PaymentServiceError: If validation fails or processing errors occur
         """
-        # Validate customer_id
         if not customer_id or not customer_id.strip():
             raise PaymentServiceError(
                 "Customer ID is required",
                 field="customerId"
             )
 
-        # Parse and validate price
         try:
             price_decimal = Decimal(price)
             if price_decimal <= 0:
@@ -115,7 +113,6 @@ class PaymentService:
                 field="price"
             )
 
-        # Parse and validate price modifier
         try:
             modifier_decimal = Decimal(str(price_modifier))
         except (InvalidOperation, ValueError):
@@ -124,7 +121,6 @@ class PaymentService:
                 field="priceModifier"
             )
 
-        # Parse and validate payment method
         try:
             payment_method_enum = PaymentMethod(payment_method)
         except ValueError:
@@ -135,7 +131,6 @@ class PaymentService:
                 field="paymentMethod"
             )
 
-        # Get the payment method handler and process
         try:
             handler = get_payment_method(payment_method_enum)
             final_price, points, validated_additional_item = handler.process(
@@ -146,7 +141,6 @@ class PaymentService:
         except PaymentMethodError as e:
             raise PaymentServiceError(e.message, e.field)
 
-        # Create and store the payment record
         payment = Payment(
             customer_id=customer_id.strip(),
             price=price_decimal,
@@ -159,7 +153,7 @@ class PaymentService:
         )
 
         self.db.add(payment)
-        await self.db.flush()  # Flush to get the ID without committing
+        await self.db.flush()
 
         return {
             "final_price": str(final_price),
@@ -190,15 +184,12 @@ class PaymentService:
         Raises:
             PaymentServiceError: If date range is invalid
         """
-        # Validate date range
         if start_datetime >= end_datetime:
             raise PaymentServiceError(
                 "Start datetime must be before end datetime",
                 field="startDateTime"
             )
 
-        # Query payments aggregated by hour
-        # Using date_trunc to group by hour boundary
         hour_trunc = func.date_trunc("hour", Payment.datetime)
 
         query = (
@@ -216,7 +207,6 @@ class PaymentService:
         result = await self.db.execute(query)
         rows = result.all()
 
-        # Format the results
         sales_report = []
         for row in rows:
             sales_report.append({

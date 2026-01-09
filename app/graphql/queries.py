@@ -29,7 +29,7 @@ class Query:
     """
     GraphQL Query type containing all query operations.
 
-    Currently supports:
+    Currently, supports:
     - salesReport: Get hourly sales data within a date range
     - supportedPaymentMethods: List all available payment methods
     """
@@ -90,20 +90,16 @@ class Query:
                 ]
             }
         """
-        # Get database session from context
         db = info.context["db"]
 
-        # Create service instance
         service = PaymentService(db)
 
         try:
-            # Get the sales report
             report_data = await service.get_sales_report(
                 start_datetime=input.start_datetime,
                 end_datetime=input.end_datetime,
             )
 
-            # Convert to GraphQL types
             hourly_sales = [
                 HourlySales(
                     datetime=item["datetime"],
@@ -122,7 +118,6 @@ class Query:
                 field=e.field,
             )
         except Exception as e:
-            # Log error in production
             return ErrorResponse(
                 error="INTERNAL_ERROR",
                 message="An unexpected error occurred while generating the report",

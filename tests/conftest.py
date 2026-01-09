@@ -56,7 +56,6 @@ async def test_engine():
 
     yield engine
 
-    # Cleanup: drop all tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
@@ -99,12 +98,10 @@ async def test_client(test_engine) -> AsyncGenerator[AsyncClient, None]:
         expire_on_commit=False,
     )
 
-    # Override the context getter
     async def override_get_context(request):
         async with TestSessionLocal() as session:
             return {"request": request, "db": session}
 
-    # Get the GraphQL router and override its context
     from app.main import graphql_router
     original_context_getter = graphql_router.context_getter
     graphql_router.context_getter = override_get_context
@@ -113,7 +110,6 @@ async def test_client(test_engine) -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
 
-    # Restore original context getter
     graphql_router.context_getter = original_context_getter
 
 

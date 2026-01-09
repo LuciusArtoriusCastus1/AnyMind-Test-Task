@@ -42,7 +42,7 @@ A FastAPI + GraphQL backend system for processing e-commerce payments with multi
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd anymind-pos
+cd AnyMind-Test-Task
 ```
 
 2. Start the services:
@@ -307,7 +307,3 @@ Response:
   "version": "1.0.0"
 }
 ```
-
-## License
-
-This project is for evaluation purposes.

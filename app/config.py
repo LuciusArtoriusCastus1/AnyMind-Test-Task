@@ -29,7 +29,6 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Database configuration
-    # Format: postgresql+asyncpg://user:password@host:port/database
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/anymind_pos"
 
     # Test database (SQLite for fast testing)
