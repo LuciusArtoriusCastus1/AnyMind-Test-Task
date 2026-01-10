@@ -44,8 +44,6 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False,
 )
 
-# Base class for all SQLAlchemy models
-# All model classes should inherit from this base
 Base = declarative_base()
 
 

@@ -101,7 +101,6 @@ graphql_router = GraphQLRouter(
     graphiql=True,  # Enable GraphiQL playground at /graphql
 )
 
-# Create the FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     description="""

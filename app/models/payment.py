@@ -105,7 +105,6 @@ class Payment(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     def __repr__(self) -> str:
-        """String representation for debugging."""
         return (
             f"<Payment(id={self.id}, customer={self.customer_id}, "
             f"method={self.payment_method.value}, final={self.final_price})>"
