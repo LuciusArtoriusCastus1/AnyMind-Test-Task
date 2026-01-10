@@ -424,3 +424,208 @@ class TestSupportedPaymentMethodsQuery:
         assert "MASTERCARD" in methods
         assert "CASH_ON_DELIVERY" in methods
         assert len(methods) == 12  # All 12 payment methods
+
+
+class TestRootEndpoint:
+    """Tests for the root endpoint."""
+
+    async def test_root_endpoint(self, test_client):
+        """Test root endpoint returns API information."""
+        response = await test_client.get("/")
+        assert response.status_code == 200
+        data = response.json()
+        assert "message" in data
+        assert "graphql_endpoint" in data
+        assert data["graphql_endpoint"] == "/graphql"
+
+
+class TestPaymentValidation:
+    """Tests for payment validation edge cases."""
+
+    async def test_create_payment_empty_customer_id(self, test_client):
+        """Test error when customer ID is empty."""
+        mutation = """
+            mutation {
+                createPayment(input: {
+                    customerId: "   "
+                    price: "100.00"
+                    priceModifier: 1.0
+                    paymentMethod: CASH
+                    datetime: "2022-09-01T00:00:00Z"
+                }) {
+                    ... on PaymentResponse {
+                        finalPrice
+                        points
+                    }
+                    ... on ErrorResponse {
+                        error
+                        message
+                        field
+                    }
+                }
+            }
+        """
+        response = await test_client.post("/graphql", json={"query": mutation})
+        assert response.status_code == 200
+        data = response.json()
+
+        result = data["data"]["createPayment"]
+        assert result["error"] == "VALIDATION_ERROR"
+        assert "customerId" in result["field"]
+
+    async def test_create_payment_zero_price(self, test_client):
+        """Test error when price is zero."""
+        mutation = """
+            mutation {
+                createPayment(input: {
+                    customerId: "12345"
+                    price: "0"
+                    priceModifier: 1.0
+                    paymentMethod: CASH
+                    datetime: "2022-09-01T00:00:00Z"
+                }) {
+                    ... on PaymentResponse {
+                        finalPrice
+                        points
+                    }
+                    ... on ErrorResponse {
+                        error
+                        message
+                        field
+                    }
+                }
+            }
+        """
+        response = await test_client.post("/graphql", json={"query": mutation})
+        assert response.status_code == 200
+        data = response.json()
+
+        result = data["data"]["createPayment"]
+        assert result["error"] == "VALIDATION_ERROR"
+        assert "price" in result["field"]
+
+    async def test_create_payment_negative_price(self, test_client):
+        """Test error when price is negative."""
+        mutation = """
+            mutation {
+                createPayment(input: {
+                    customerId: "12345"
+                    price: "-50.00"
+                    priceModifier: 1.0
+                    paymentMethod: CASH
+                    datetime: "2022-09-01T00:00:00Z"
+                }) {
+                    ... on PaymentResponse {
+                        finalPrice
+                        points
+                    }
+                    ... on ErrorResponse {
+                        error
+                        message
+                        field
+                    }
+                }
+            }
+        """
+        response = await test_client.post("/graphql", json={"query": mutation})
+        assert response.status_code == 200
+        data = response.json()
+
+        result = data["data"]["createPayment"]
+        assert result["error"] == "VALIDATION_ERROR"
+        assert "price" in result["field"]
+
+    async def test_create_payment_bank_transfer_missing_all(self, test_client):
+        """Test error when bank transfer has no additional item."""
+        mutation = """
+            mutation {
+                createPayment(input: {
+                    customerId: "12345"
+                    price: "100.00"
+                    priceModifier: 1.0
+                    paymentMethod: BANK_TRANSFER
+                    datetime: "2022-09-01T00:00:00Z"
+                }) {
+                    ... on PaymentResponse {
+                        finalPrice
+                        points
+                    }
+                    ... on ErrorResponse {
+                        error
+                        message
+                        field
+                    }
+                }
+            }
+        """
+        response = await test_client.post("/graphql", json={"query": mutation})
+        assert response.status_code == 200
+        data = response.json()
+
+        result = data["data"]["createPayment"]
+        assert result["error"] == "VALIDATION_ERROR"
+        assert "bank" in result["message"] or "additionalItem" in result["field"]
+
+    async def test_create_payment_cheque_missing_all(self, test_client):
+        """Test error when cheque has no additional item."""
+        mutation = """
+            mutation {
+                createPayment(input: {
+                    customerId: "12345"
+                    price: "100.00"
+                    priceModifier: 1.0
+                    paymentMethod: CHEQUE
+                    datetime: "2022-09-01T00:00:00Z"
+                }) {
+                    ... on PaymentResponse {
+                        finalPrice
+                        points
+                    }
+                    ... on ErrorResponse {
+                        error
+                        message
+                        field
+                    }
+                }
+            }
+        """
+        response = await test_client.post("/graphql", json={"query": mutation})
+        assert response.status_code == 200
+        data = response.json()
+
+        result = data["data"]["createPayment"]
+        assert result["error"] == "VALIDATION_ERROR"
+
+    async def test_create_payment_cheque_missing_bank(self, test_client):
+        """Test error when cheque is missing bank name."""
+        mutation = """
+            mutation {
+                createPayment(input: {
+                    customerId: "12345"
+                    price: "100.00"
+                    priceModifier: 1.0
+                    paymentMethod: CHEQUE
+                    datetime: "2022-09-01T00:00:00Z"
+                    additionalItem: {
+                        chequeNumber: "CH123456"
+                    }
+                }) {
+                    ... on PaymentResponse {
+                        finalPrice
+                        points
+                    }
+                    ... on ErrorResponse {
+                        error
+                        message
+                        field
+                    }
+                }
+            }
+        """
+        response = await test_client.post("/graphql", json={"query": mutation})
+        assert response.status_code == 200
+        data = response.json()
+
+        result = data["data"]["createPayment"]
+        assert result["error"] == "VALIDATION_ERROR"
+        assert "bank" in result["message"]

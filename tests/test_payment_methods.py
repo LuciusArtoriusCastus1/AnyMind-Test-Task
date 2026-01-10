@@ -263,6 +263,17 @@ class TestBankTransferPayment:
         assert additional["bank"] == "Kasikorn"
         assert additional["account_number"] == "1234567890"
 
+    def test_missing_additional_item(self):
+        """Test error when additional_item is None."""
+        handler = BankTransferPayment()
+        with pytest.raises(PaymentMethodError) as exc_info:
+            handler.process(
+                price=Decimal("100.00"),
+                price_modifier=Decimal("1.0"),
+                additional_item=None,
+            )
+        assert "bank" in exc_info.value.message or "additionalItem" in exc_info.value.field
+
     def test_missing_bank(self):
         """Test error when bank is missing."""
         handler = BankTransferPayment()
@@ -301,6 +312,28 @@ class TestChequePayment:
         assert points == 0
         assert additional["bank"] == "Bangkok Bank"
         assert additional["cheque_number"] == "CH123456"
+
+    def test_missing_additional_item(self):
+        """Test error when additional_item is None."""
+        handler = ChequePayment()
+        with pytest.raises(PaymentMethodError) as exc_info:
+            handler.process(
+                price=Decimal("100.00"),
+                price_modifier=Decimal("1.0"),
+                additional_item=None,
+            )
+        assert "cheque" in exc_info.value.message.lower() or "additionalItem" in exc_info.value.field
+
+    def test_missing_bank(self):
+        """Test error when bank is missing."""
+        handler = ChequePayment()
+        with pytest.raises(PaymentMethodError) as exc_info:
+            handler.process(
+                price=Decimal("100.00"),
+                price_modifier=Decimal("1.0"),
+                additional_item={"cheque_number": "CH123456"},
+            )
+        assert "bank" in exc_info.value.message
 
     def test_missing_cheque_number(self):
         """Test error when cheque_number is missing."""
