@@ -197,7 +197,7 @@ docker-compose -f tests/docker-compose.test.yml up -d
 pytest
 
 # Run with coverage report
-pytest --cov=app --cov-report=html
+pytest --cov=app --cov-report=term-missing --cov-report=html -v
 
 # Run specific test file
 pytest tests/test_payment_methods.py -v
