@@ -17,8 +17,8 @@ Design Decisions:
 
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from typing import Optional, List
-from sqlalchemy import select, func
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.payment import Payment, PaymentMethod
@@ -33,7 +33,7 @@ class PaymentServiceError(Exception):
     Wraps lower-level errors with additional context for the API layer.
     """
 
-    def __init__(self, message: str, field: Optional[str] = None):
+    def __init__(self, message: str, field: str | None = None):
         self.message = message
         self.field = field
         super().__init__(self.message)
@@ -66,7 +66,7 @@ class PaymentService:
         price_modifier: float,
         payment_method: str,
         transaction_datetime: datetime,
-        additional_item: Optional[dict] = None,
+        additional_item: dict | None = None,
     ) -> dict:
         """
         Process a payment transaction.
@@ -107,11 +107,11 @@ class PaymentService:
                     "Price must be greater than zero",
                     field="price"
                 )
-        except (InvalidOperation, ValueError) as e:
+        except (InvalidOperation, ValueError):
             raise PaymentServiceError(
                 f"Invalid price format: {price}. Must be a valid decimal number.",
                 field="price"
-            )
+            ) from None
 
         try:
             modifier_decimal = Decimal(str(price_modifier))
@@ -119,7 +119,7 @@ class PaymentService:
             raise PaymentServiceError(
                 f"Invalid price modifier: {price_modifier}",
                 field="priceModifier"
-            )
+            ) from None
 
         try:
             payment_method_enum = PaymentMethod(payment_method)
@@ -129,7 +129,7 @@ class PaymentService:
                 f"Invalid payment method: {payment_method}. "
                 f"Valid methods are: {', '.join(valid_methods)}",
                 field="paymentMethod"
-            )
+            ) from None
 
         try:
             handler = get_payment_method(payment_method_enum)
@@ -139,7 +139,7 @@ class PaymentService:
                 additional_item=additional_item
             )
         except PaymentMethodError as e:
-            raise PaymentServiceError(e.message, e.field)
+            raise PaymentServiceError(e.message, e.field) from None
 
         payment = Payment(
             customer_id=customer_id.strip(),
@@ -164,7 +164,7 @@ class PaymentService:
         self,
         start_datetime: datetime,
         end_datetime: datetime,
-    ) -> List[dict]:
+    ) -> list[dict]:
         """
         Get hourly sales report within a date range.
 

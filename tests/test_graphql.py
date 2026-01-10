@@ -9,8 +9,8 @@ Tests the complete GraphQL API including:
 These tests use the full application stack with a test database.
 """
 
+
 import pytest
-from datetime import datetime
 
 pytestmark = pytest.mark.asyncio
 

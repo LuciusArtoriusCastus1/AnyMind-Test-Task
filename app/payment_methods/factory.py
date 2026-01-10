@@ -13,28 +13,27 @@ To add a new payment method:
 3. Register the method in PAYMENT_METHODS dict below
 """
 
-from typing import Dict, Type
 
 from app.models.payment import PaymentMethod
 from app.payment_methods.base import BasePaymentMethod, PaymentMethodError
 from app.payment_methods.methods import (
-    CashPayment,
-    CashOnDeliveryPayment,
-    VisaPayment,
-    MastercardPayment,
     AmexPayment,
+    BankTransferPayment,
+    CashOnDeliveryPayment,
+    CashPayment,
+    ChequePayment,
+    GrabPayPayment,
     JcbPayment,
     LinePayPayment,
+    MastercardPayment,
     PayPayPayment,
     PointsPayment,
-    GrabPayPayment,
-    BankTransferPayment,
-    ChequePayment,
+    VisaPayment,
 )
 
 # Registry mapping PaymentMethod enum values to their strategy classes
 # This makes it trivial to add new payment methods - just add an entry here
-PAYMENT_METHODS: Dict[PaymentMethod, Type[BasePaymentMethod]] = {
+PAYMENT_METHODS: dict[PaymentMethod, type[BasePaymentMethod]] = {
     PaymentMethod.CASH: CashPayment,
     PaymentMethod.CASH_ON_DELIVERY: CashOnDeliveryPayment,
     PaymentMethod.VISA: VisaPayment,
@@ -83,7 +82,7 @@ class PaymentMethodFactory:
         if payment_method not in PAYMENT_METHODS:
             raise PaymentMethodError(
                 f"Unsupported payment method: {payment_method.value}. "
-                f"Supported methods are: {', '.join(m.value for m in PAYMENT_METHODS.keys())}",
+                f"Supported methods are: {', '.join(m.value for m in PAYMENT_METHODS)}",
                 field="paymentMethod"
             )
 
@@ -98,7 +97,7 @@ class PaymentMethodFactory:
         Returns:
             list[str]: List of payment method enum values
         """
-        return [method.value for method in PAYMENT_METHODS.keys()]
+        return [method.value for method in PAYMENT_METHODS]
 
 
 def get_payment_method(payment_method: PaymentMethod) -> BasePaymentMethod:

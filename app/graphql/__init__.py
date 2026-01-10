@@ -12,7 +12,7 @@ Structure:
 Note: The schema is created in app/main.py with the SQLAlchemy session extension.
 """
 
-from app.graphql.queries import Query
 from app.graphql.mutations import Mutation
+from app.graphql.queries import Query
 
 __all__ = ["Query", "Mutation"]

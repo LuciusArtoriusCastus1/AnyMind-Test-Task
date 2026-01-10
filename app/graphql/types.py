@@ -16,11 +16,10 @@ Design Philosophy:
 - Include descriptions for all types and fields
 """
 
-import strawberry
-from typing import Optional, List
 from datetime import datetime
 from enum import Enum
 
+import strawberry
 
 # ============================================================================
 # Enums
@@ -73,11 +72,11 @@ class AdditionalItemInput:
     - CHEQUE: Requires bank and cheque_number
     """
 
-    last4: Optional[str] = None
-    courier: Optional[str] = None
-    bank: Optional[str] = None
-    account_number: Optional[str] = None
-    cheque_number: Optional[str] = None
+    last4: str | None = None
+    courier: str | None = None
+    bank: str | None = None
+    account_number: str | None = None
+    cheque_number: str | None = None
 
 
 @strawberry.input(description="Input for processing a payment")
@@ -101,7 +100,7 @@ class PaymentInput:
     price_modifier: float
     payment_method: PaymentMethodEnum
     datetime: datetime
-    additional_item: Optional[AdditionalItemInput] = None
+    additional_item: AdditionalItemInput | None = None
 
 
 @strawberry.input(description="Input for querying sales report")
@@ -167,7 +166,7 @@ class SalesReportResponse:
     Contains a list of hourly sales data within the requested date range.
     """
 
-    sales: List[HourlySales] = strawberry.field(
+    sales: list[HourlySales] = strawberry.field(
         description="List of hourly sales data"
     )
 
@@ -192,7 +191,7 @@ class ErrorResponse:
     message: str = strawberry.field(
         description="Human-readable error description"
     )
-    field: Optional[str] = strawberry.field(
+    field: str | None = strawberry.field(
         default=None,
         description="The specific field that caused the error"
     )

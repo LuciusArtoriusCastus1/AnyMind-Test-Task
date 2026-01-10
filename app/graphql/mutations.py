@@ -12,9 +12,9 @@ import strawberry
 from strawberry.types import Info
 
 from app.graphql.types import (
+    ErrorResponse,
     PaymentInput,
     PaymentResponse,
-    ErrorResponse,
     PaymentResult,
 )
 from app.services.payment_service import PaymentService, PaymentServiceError
@@ -131,7 +131,7 @@ class Mutation:
                 message=e.message,
                 field=e.field,
             )
-        except Exception as e:
+        except Exception:
             return ErrorResponse(
                 error="INTERNAL_ERROR",
                 message="An unexpected error occurred while processing the payment",

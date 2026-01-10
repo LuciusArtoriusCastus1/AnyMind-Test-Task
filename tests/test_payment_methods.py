@@ -10,26 +10,27 @@ Tests the payment method strategy classes for:
 Each payment method is tested with valid and invalid inputs.
 """
 
-import pytest
 from decimal import Decimal
 
+import pytest
+
+from app.models.payment import PaymentMethod
 from app.payment_methods.base import PaymentMethodError
+from app.payment_methods.factory import get_payment_method
 from app.payment_methods.methods import (
-    CashPayment,
-    CashOnDeliveryPayment,
-    VisaPayment,
-    MastercardPayment,
     AmexPayment,
+    BankTransferPayment,
+    CashOnDeliveryPayment,
+    CashPayment,
+    ChequePayment,
+    GrabPayPayment,
     JcbPayment,
     LinePayPayment,
+    MastercardPayment,
     PayPayPayment,
     PointsPayment,
-    GrabPayPayment,
-    BankTransferPayment,
-    ChequePayment,
+    VisaPayment,
 )
-from app.payment_methods.factory import get_payment_method
-from app.models.payment import PaymentMethod
 
 
 class TestCashPayment:

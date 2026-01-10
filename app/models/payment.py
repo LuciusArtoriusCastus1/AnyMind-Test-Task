@@ -15,13 +15,13 @@ Model Design Decisions:
 import enum
 
 from sqlalchemy import (
+    JSON,
     Column,
-    Integer,
-    String,
-    Numeric,
     DateTime,
     Enum,
-    JSON,
+    Integer,
+    Numeric,
+    String,
 )
 from sqlalchemy.sql import func
 

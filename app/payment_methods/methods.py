@@ -24,7 +24,6 @@ Payment Methods Overview:
 
 import re
 from decimal import Decimal
-from typing import Optional
 
 from app.payment_methods.base import BasePaymentMethod, PaymentMethodError
 
@@ -42,7 +41,7 @@ class CashPayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.05")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """Cash payments don't require additional data."""
         return additional_item or {}
 
@@ -63,7 +62,7 @@ class CashOnDeliveryPayment(BasePaymentMethod):
     # Valid courier services for COD
     VALID_COURIERS = {"YAMATO", "SAGAWA"}
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """
         Validate courier service selection.
 
@@ -99,7 +98,7 @@ class CardPaymentBase(BasePaymentMethod):
     for identification and receipt purposes.
     """
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """
         Validate card's last 4 digits.
 
@@ -198,7 +197,7 @@ class LinePayPayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.01")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """LINE Pay doesn't require additional data."""
         return additional_item or {}
 
@@ -216,7 +215,7 @@ class PayPayPayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.01")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """PayPay doesn't require additional data."""
         return additional_item or {}
 
@@ -235,7 +234,7 @@ class PointsPayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.0")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """Points payment doesn't require additional data."""
         return additional_item or {}
 
@@ -253,7 +252,7 @@ class GrabPayPayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.01")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """GrabPay doesn't require additional data."""
         return additional_item or {}
 
@@ -271,7 +270,7 @@ class BankTransferPayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.0")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """
         Validate bank transfer details.
 
@@ -321,7 +320,7 @@ class ChequePayment(BasePaymentMethod):
     max_modifier = Decimal("1.0")
     points_rate = Decimal("0.0")
 
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """
         Validate cheque details.
 

@@ -9,20 +9,20 @@ This module provides shared fixtures for all tests:
 Using PostgreSQL for tests to ensure full compatibility with production.
 """
 
+from collections.abc import AsyncGenerator
+from datetime import UTC, datetime
+from decimal import Decimal
+from unittest.mock import patch
+
 import pytest
 import pytest_asyncio
-from datetime import datetime, timezone
-from decimal import Decimal
-from typing import AsyncGenerator
-from unittest.mock import patch
-from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.database import Base
 from app.config import get_settings
+from app.database import Base
 from app.main import app
 from app.models.payment import Payment, PaymentMethod
-
 
 settings = get_settings()
 
@@ -125,7 +125,7 @@ async def sample_payments(test_engine) -> list[Payment]:
             points=3,
             payment_method=PaymentMethod.VISA,
             additional_item={"last4": "1234"},
-            datetime=datetime(2022, 9, 1, 0, 30, tzinfo=timezone.utc),
+            datetime=datetime(2022, 9, 1, 0, 30, tzinfo=UTC),
         ),
         Payment(
             customer_id="customer2",
@@ -135,7 +135,7 @@ async def sample_payments(test_engine) -> list[Payment]:
             points=10,
             payment_method=PaymentMethod.CASH,
             additional_item={},
-            datetime=datetime(2022, 9, 1, 0, 45, tzinfo=timezone.utc),
+            datetime=datetime(2022, 9, 1, 0, 45, tzinfo=UTC),
         ),
         Payment(
             customer_id="customer1",
@@ -145,7 +145,7 @@ async def sample_payments(test_engine) -> list[Payment]:
             points=7,
             payment_method=PaymentMethod.CASH_ON_DELIVERY,
             additional_item={"courier": "YAMATO"},
-            datetime=datetime(2022, 9, 1, 1, 15, tzinfo=timezone.utc),
+            datetime=datetime(2022, 9, 1, 1, 15, tzinfo=UTC),
         ),
         Payment(
             customer_id="customer3",
@@ -155,7 +155,7 @@ async def sample_payments(test_engine) -> list[Payment]:
             points=10,
             payment_method=PaymentMethod.AMEX,
             additional_item={"last4": "5678"},
-            datetime=datetime(2022, 9, 1, 2, 0, tzinfo=timezone.utc),
+            datetime=datetime(2022, 9, 1, 2, 0, tzinfo=UTC),
         ),
     ]
 

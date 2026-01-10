@@ -14,16 +14,17 @@ Application Features:
 """
 
 from contextlib import asynccontextmanager
+
+import strawberry
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from strawberry.fastapi import GraphQLRouter
 from strawberry.extensions import SchemaExtension
-import strawberry
+from strawberry.fastapi import GraphQLRouter
 
 from app.config import get_settings
-from app.database import init_db, close_db, AsyncSessionLocal
-from app.graphql.queries import Query
+from app.database import AsyncSessionLocal, close_db, init_db
 from app.graphql.mutations import Mutation
+from app.graphql.queries import Query
 
 settings = get_settings()
 

@@ -206,6 +206,21 @@ pytest tests/test_payment_methods.py -v
 docker-compose -f tests/docker-compose.test.yml down -v
 ```
 
+## Linting
+
+The project uses [Ruff](https://github.com/astral-sh/ruff) for linting and code formatting.
+
+```bash
+# Check for linting issues
+ruff check .
+
+# Auto-fix linting issues
+ruff check --fix .
+
+# Format code
+ruff format .
+```
+
 ## Project Structure
 
 ```
@@ -241,6 +256,7 @@ AnyMind-Test-Task/
 ├── alembic/                 # Database migrations
 ├── Dockerfile
 ├── docker-compose.yml
+├── pyproject.toml           # Project config and linting rules
 ├── requirements.txt
 ├── .env.example
 └── README.md

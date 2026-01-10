@@ -17,7 +17,6 @@ By using this pattern, adding a new payment method only requires:
 
 from abc import ABC, abstractmethod
 from decimal import Decimal
-from typing import Any, Optional, Tuple
 
 
 class PaymentMethodError(Exception):
@@ -29,7 +28,7 @@ class PaymentMethodError(Exception):
         field: Optional field name that caused the error
     """
 
-    def __init__(self, message: str, field: Optional[str] = None):
+    def __init__(self, message: str, field: str | None = None):
         self.message = message
         self.field = field
         super().__init__(self.message)
@@ -54,7 +53,7 @@ class BasePaymentMethod(ABC):
     points_rate: Decimal
 
     @abstractmethod
-    def validate_additional_item(self, additional_item: Optional[dict]) -> dict:
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         """
         Validate and process additional payment-specific data.
 
@@ -127,8 +126,8 @@ class BasePaymentMethod(ABC):
         self,
         price: Decimal,
         price_modifier: Decimal,
-        additional_item: Optional[dict]
-    ) -> Tuple[Decimal, int, dict]:
+        additional_item: dict | None
+    ) -> tuple[Decimal, int, dict]:
         """
         Process a payment with full validation.
 

@@ -8,20 +8,20 @@ Queries in GraphQL represent read-only operations that fetch data
 without modifying the database state.
 """
 
+
 import strawberry
 from strawberry.types import Info
-from typing import List
 
 from app.graphql.types import (
+    ErrorResponse,
+    HourlySales,
+    PaymentMethodEnum,
     SalesReportInput,
     SalesReportResponse,
-    HourlySales,
-    ErrorResponse,
     SalesReportResult,
-    PaymentMethodEnum,
 )
-from app.services.payment_service import PaymentService, PaymentServiceError
 from app.payment_methods.factory import PaymentMethodFactory
+from app.services.payment_service import PaymentService, PaymentServiceError
 
 
 @strawberry.type
@@ -117,7 +117,7 @@ class Query:
                 message=e.message,
                 field=e.field,
             )
-        except Exception as e:
+        except Exception:
             return ErrorResponse(
                 error="INTERNAL_ERROR",
                 message="An unexpected error occurred while generating the report",
@@ -125,7 +125,7 @@ class Query:
             )
 
     @strawberry.field(description="List all supported payment methods")
-    def supported_payment_methods(self) -> List[PaymentMethodEnum]:
+    def supported_payment_methods(self) -> list[PaymentMethodEnum]:
         """
         Get a list of all supported payment methods.
 

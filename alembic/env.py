@@ -35,6 +35,7 @@ target_metadata = Base.metadata
 
 # Get database URL from environment if available
 import os
+
 if os.getenv("DATABASE_URL"):
     config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
 
