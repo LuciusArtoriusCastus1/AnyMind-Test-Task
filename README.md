@@ -11,7 +11,7 @@ A FastAPI + GraphQL backend system for processing e-commerce payments with multi
 - **GraphQL API**: Modern API with interactive playground
 - **PostgreSQL Database**: Robust data persistence
 - **Docker Support**: Easy deployment with Docker Compose
-- **Comprehensive Tests**: Unit and integration tests
+- **Comprehensive Tests**: Unit and integration tests with PostgreSQL
 
 ## Payment Methods Overview
 
@@ -187,9 +187,11 @@ query {
 
 ## Running Tests
 
+Tests use a separate PostgreSQL database to ensure full compatibility with production.
+
 ```bash
-# Install test dependencies (included in requirements.txt)
-pip install pytest pytest-asyncio pytest-cov httpx aiosqlite
+# Start the test database
+docker-compose -f tests/docker-compose.test.yml up -d
 
 # Run all tests
 pytest
@@ -199,12 +201,15 @@ pytest --cov=app --cov-report=html
 
 # Run specific test file
 pytest tests/test_payment_methods.py -v
+
+# Stop the test database
+docker-compose -f tests/docker-compose.test.yml down -v
 ```
 
 ## Project Structure
 
 ```
-anymind-pos/
+AnyMind-Test-Task/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py              # FastAPI application entry point
@@ -229,9 +234,10 @@ anymind-pos/
 │       └── mutations.py     # GraphQL mutations
 ├── tests/
 │   ├── __init__.py
-│   ├── conftest.py          # Test fixtures
+│   ├── conftest.py              # Test fixtures
+│   ├── docker-compose.test.yml  # Test database setup
 │   ├── test_payment_methods.py  # Unit tests
-│   └── test_graphql.py      # Integration tests
+│   └── test_graphql.py          # Integration tests
 ├── alembic/                 # Database migrations
 ├── Dockerfile
 ├── docker-compose.yml

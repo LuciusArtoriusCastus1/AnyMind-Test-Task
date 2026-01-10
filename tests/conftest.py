@@ -2,14 +2,11 @@
 Pytest Configuration and Fixtures
 
 This module provides shared fixtures for all tests:
-- Database setup with SQLite for fast testing
+- Database setup with PostgreSQL for full compatibility
 - Test client for HTTP/GraphQL requests
 - Sample data generators
 
-Using SQLite for tests instead of PostgreSQL for:
-- Faster test execution
-- No external dependencies for CI/CD
-- Easy test isolation
+Using PostgreSQL for tests to ensure full compatibility with production.
 """
 
 import pytest
@@ -17,16 +14,17 @@ import pytest_asyncio
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import AsyncGenerator
+from unittest.mock import patch
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from app.database import Base
+from app.config import get_settings
 from app.main import app
 from app.models.payment import Payment, PaymentMethod
 
 
-# Test database URL - using SQLite for simplicity
-TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+settings = get_settings()
 
 
 @pytest.fixture(scope="session")
@@ -43,11 +41,11 @@ async def test_engine():
     """
     Create a test database engine.
 
-    Uses SQLite with aiosqlite for async support.
+    Uses PostgreSQL for full compatibility with production.
     Creates fresh tables for each test.
     """
     engine = create_async_engine(
-        TEST_DATABASE_URL,
+        settings.TEST_DATABASE_URL,
         echo=False,
     )
 
@@ -91,36 +89,33 @@ async def test_client(test_engine) -> AsyncGenerator[AsyncClient, None]:
     This client can be used to test the FastAPI endpoints
     including the GraphQL endpoint.
     """
-    # Override the database session in the app
     TestSessionLocal = async_sessionmaker(
         bind=test_engine,
         class_=AsyncSession,
         expire_on_commit=False,
     )
 
-    async def override_get_context(request):
-        async with TestSessionLocal() as session:
-            return {"request": request, "db": session}
 
-    from app.main import graphql_router
-    original_context_getter = graphql_router.context_getter
-    graphql_router.context_getter = override_get_context
-
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client
-
-    graphql_router.context_getter = original_context_getter
+    with patch("app.main.AsyncSessionLocal", TestSessionLocal):
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            yield client
 
 
 @pytest_asyncio.fixture
-async def sample_payments(test_session) -> list[Payment]:
+async def sample_payments(test_engine) -> list[Payment]:
     """
     Create sample payment records for testing.
 
     Returns a list of payments with various methods and amounts
     for use in sales report tests.
     """
+    TestSessionLocal = async_sessionmaker(
+        bind=test_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
     payments = [
         Payment(
             customer_id="customer1",
@@ -164,9 +159,9 @@ async def sample_payments(test_session) -> list[Payment]:
         ),
     ]
 
-    for payment in payments:
-        test_session.add(payment)
-
-    await test_session.commit()
+    async with TestSessionLocal() as session:
+        for payment in payments:
+            session.add(payment)
+        await session.commit()
 
     return payments
