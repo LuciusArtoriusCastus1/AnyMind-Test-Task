@@ -14,11 +14,11 @@ from strawberry.types import Info
 from app.graphql.types import (
     ErrorResponse,
     HourlySales,
-    PaymentMethodEnum,
     SalesReportInput,
     SalesReportResponse,
     SalesReportResult,
 )
+from app.models.payment import PaymentMethod
 from app.payment_methods.factory import PaymentMethodFactory
 from app.services.payment_service import PaymentService, PaymentServiceError
 
@@ -124,7 +124,7 @@ class Query:
             )
 
     @strawberry.field(description="List all supported payment methods")
-    def supported_payment_methods(self) -> list[PaymentMethodEnum]:
+    def supported_payment_methods(self) -> list[PaymentMethod]:
         """
         Get a list of all supported payment methods.
 
@@ -132,7 +132,7 @@ class Query:
         are available in the system.
 
         Returns:
-            List[PaymentMethodEnum]: All available payment methods
+            List[PaymentMethod]: All available payment methods
         """
         method_names = PaymentMethodFactory.get_supported_methods()
-        return [PaymentMethodEnum(name) for name in method_names]
+        return [PaymentMethod(name) for name in method_names]

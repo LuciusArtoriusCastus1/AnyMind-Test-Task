@@ -5,56 +5,33 @@ This module defines all GraphQL types using Strawberry's type system.
 Strawberry uses Python type hints and dataclasses to define the schema.
 
 Types are organized into:
-1. Enums - Payment methods
+1. Enums - Payment methods (derived from models.PaymentMethod)
 2. Input Types - Request structures for mutations/queries
 3. Output Types - Response structures
 4. Error Types - Structured error responses
 
 Design Philosophy:
+- Single source of truth: PaymentMethod enum defined once in models
 - Use Optional for truly optional fields
 - Use explicit types for better documentation
 - Include descriptions for all types and fields
 """
 
 from datetime import datetime
-from enum import Enum
 
 import strawberry
+
+from app.models.payment import PaymentMethod
 
 # ============================================================================
 # Enums
 # ============================================================================
 
-
-@strawberry.enum(description="Available payment methods in the system")
-class PaymentMethodEnum(Enum):
-    """
-    Enumeration of all supported payment methods.
-
-    Each method has different price modifier ranges and points rates:
-    - CASH: Up to 10% discount, 5% points
-    - CASH_ON_DELIVERY: Up to 2% surcharge, 5% points
-    - VISA/MASTERCARD: Up to 5% discount, 3% points
-    - AMEX: 2% discount to 1% surcharge, 2% points
-    - JCB: Up to 5% discount, 5% points
-    - LINE_PAY/PAYPAY/GRAB_PAY: No modifier, 1% points
-    - POINTS: No modifier, no points (redemption)
-    - BANK_TRANSFER: No modifier, no points
-    - CHEQUE: Up to 10% discount, no points
-    """
-
-    CASH = "CASH"
-    CASH_ON_DELIVERY = "CASH_ON_DELIVERY"
-    VISA = "VISA"
-    MASTERCARD = "MASTERCARD"
-    AMEX = "AMEX"
-    JCB = "JCB"
-    LINE_PAY = "LINE_PAY"
-    PAYPAY = "PAYPAY"
-    POINTS = "POINTS"
-    GRAB_PAY = "GRAB_PAY"
-    BANK_TRANSFER = "BANK_TRANSFER"
-    CHEQUE = "CHEQUE"
+# Create GraphQL enum from the single source of truth (models.PaymentMethod)
+PaymentMethodEnum = strawberry.enum(
+    PaymentMethod,
+    description="Available payment methods in the system",
+)
 
 
 # ============================================================================

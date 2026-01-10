@@ -280,26 +280,38 @@ AnyMind-Test-Task/
 
 ## Adding a New Payment Method
 
-1. Add the new method to `PaymentMethod` enum in `app/models/payment.py`
+Adding a new payment method is simple - **no database migration required!**
 
-2. Create a new handler class in `app/payment_methods/methods.py`:
+The `payment_method` column is stored as a string, with validation at the application level.
+
+### 1. Add to the enum in `app/models/payment.py`:
 ```python
-class NewPaymentMethod(BasePaymentMethod):
-    min_modifier = Decimal("0.9")
-    max_modifier = Decimal("1.0")
-    points_rate = Decimal("0.05")
+class PaymentMethod(str, enum.Enum):
+    # ... existing methods ...
+    APPLE_PAY = "APPLE_PAY"  # Add new method
+```
 
-    def validate_additional_item(self, additional_item):
-        # Implement validation logic
+### 2. Create handler class in `app/payment_methods/methods.py`:
+```python
+class ApplePayPayment(BasePaymentMethod):
+    """Apple Pay payment method."""
+
+    min_modifier = Decimal("1.0")
+    max_modifier = Decimal("1.0")
+    points_rate = Decimal("0.01")
+
+    def validate_additional_item(self, additional_item: dict | None) -> dict:
         return additional_item or {}
 ```
 
-3. Register in `app/payment_methods/factory.py`:
+### 3. Register in `app/payment_methods/factory.py`:
 ```python
-PAYMENT_METHODS[PaymentMethod.NEW_METHOD] = NewPaymentMethod
+from app.payment_methods.methods import ApplePayPayment
+
+PAYMENT_METHODS[PaymentMethod.APPLE_PAY] = ApplePayPayment
 ```
 
-4. Add to GraphQL enum in `app/graphql/types.py`
+That's it! The GraphQL enum is automatically derived from `PaymentMethod`, so no additional changes needed there
 
 ## Database Migrations
 

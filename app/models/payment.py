@@ -6,10 +6,11 @@ The Payment model stores all transaction details including payment method specif
 information in a JSON field for flexibility.
 
 Model Design Decisions:
-1. PaymentMethod as Enum: Ensures type safety and easy extension for new methods
-2. Decimal for monetary values: Avoids floating-point precision issues
-3. JSON for additional_item: Flexible storage for payment method specific data
-4. Indexed datetime: Enables efficient sales reporting queries by time range
+1. PaymentMethod as Python Enum: Type safety in application code
+2. String column in DB: Avoids PostgreSQL enum migration complexity
+3. Decimal for monetary values: Avoids floating-point precision issues
+4. JSON for additional_item: Flexible storage for payment method specific data
+5. Indexed datetime: Enables efficient sales reporting queries by time range
 """
 
 import enum
@@ -18,7 +19,6 @@ from sqlalchemy import (
     JSON,
     Column,
     DateTime,
-    Enum,
     Integer,
     Numeric,
     String,
@@ -38,6 +38,13 @@ class PaymentMethod(str, enum.Enum):
     - Required additional information
 
     This enum inherits from str to allow easy serialization and comparison.
+    The database stores the string value directly for flexibility.
+
+    To add a new payment method:
+    1. Add the enum value here
+    2. Create a handler class in payment_methods/methods.py
+    3. Register it in payment_methods/factory.py
+    No database migration required!
     """
 
     CASH = "CASH"
@@ -95,8 +102,8 @@ class Payment(Base):
     final_price = Column(Numeric(precision=10, scale=2), nullable=False)
     points = Column(Integer, nullable=False, default=0)
 
-    # Payment method and additional data
-    payment_method = Column(Enum(PaymentMethod), nullable=False)
+    # Payment method stored as string for flexibility (no enum migrations needed)
+    payment_method = Column(String(50), nullable=False, index=True)
     additional_item = Column(JSON, nullable=True)
 
     # Timestamps
@@ -107,5 +114,5 @@ class Payment(Base):
     def __repr__(self) -> str:
         return (
             f"<Payment(id={self.id}, customer={self.customer_id}, "
-            f"method={self.payment_method.value}, final={self.final_price})>"
+            f"method={self.payment_method}, final={self.final_price})>"
         )

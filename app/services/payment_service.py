@@ -139,7 +139,7 @@ class PaymentService:
             price_modifier=modifier_decimal,
             final_price=final_price,
             points=points,
-            payment_method=payment_method_enum,
+            payment_method=payment_method_enum.value,
             additional_item=validated_additional_item,
             datetime=transaction_datetime,
         )
