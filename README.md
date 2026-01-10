@@ -243,7 +243,6 @@ AnyMind-Test-Task/
 │   │   └── factory.py       # Factory for creating handlers
 │   └── graphql/
 │       ├── __init__.py
-│       ├── schema.py        # GraphQL schema
 │       ├── types.py         # GraphQL type definitions
 │       ├── queries.py       # GraphQL queries
 │       └── mutations.py     # GraphQL mutations

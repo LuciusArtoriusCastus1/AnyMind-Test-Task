@@ -322,7 +322,9 @@ class TestChequePayment:
                 price_modifier=Decimal("1.0"),
                 additional_item=None,
             )
-        assert "cheque" in exc_info.value.message.lower() or "additionalItem" in exc_info.value.field
+        assert (
+            "cheque" in exc_info.value.message.lower() or "additionalItem" in exc_info.value.field
+        )
 
     def test_missing_bank(self):
         """Test error when bank is missing."""
