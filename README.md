@@ -280,9 +280,7 @@ AnyMind-Test-Task/
 
 ## Adding a New Payment Method
 
-Adding a new payment method is simple - **no database migration required!**
-
-The `payment_method` column is stored as a string, with validation at the application level.
+To add a new payment method, follow these steps:
 
 ### 1. Add to the enum in `app/models/payment.py`:
 ```python
@@ -310,8 +308,6 @@ from app.payment_methods.methods import ApplePayPayment
 
 PAYMENT_METHODS[PaymentMethod.APPLE_PAY] = ApplePayPayment
 ```
-
-That's it! The GraphQL enum is automatically derived from `PaymentMethod`, so no additional changes needed there
 
 ## Database Migrations
 
