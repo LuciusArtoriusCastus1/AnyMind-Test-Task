@@ -13,7 +13,6 @@ To add a new payment method:
 3. Register the method in PAYMENT_METHODS dict below
 """
 
-
 from app.models.payment import PaymentMethod
 from app.payment_methods.base import BasePaymentMethod, PaymentMethodError
 from app.payment_methods.methods import (
@@ -83,7 +82,7 @@ class PaymentMethodFactory:
             raise PaymentMethodError(
                 f"Unsupported payment method: {payment_method.value}. "
                 f"Supported methods are: {', '.join(m.value for m in PAYMENT_METHODS)}",
-                field="paymentMethod"
+                field="paymentMethod",
             )
 
         handler_class = PAYMENT_METHODS[payment_method]

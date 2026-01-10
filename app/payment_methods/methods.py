@@ -76,7 +76,7 @@ class CashOnDeliveryPayment(BasePaymentMethod):
             raise PaymentMethodError(
                 "Cash on delivery requires a courier service. "
                 "Please provide 'courier' in additionalItem.",
-                field="additionalItem.courier"
+                field="additionalItem.courier",
             )
 
         courier = additional_item["courier"].upper()
@@ -84,7 +84,7 @@ class CashOnDeliveryPayment(BasePaymentMethod):
             raise PaymentMethodError(
                 f"Invalid courier service '{courier}'. "
                 f"Valid options are: {', '.join(sorted(self.VALID_COURIERS))}",
-                field="additionalItem.courier"
+                field="additionalItem.courier",
             )
 
         return {"courier": courier}
@@ -112,7 +112,7 @@ class CardPaymentBase(BasePaymentMethod):
             raise PaymentMethodError(
                 "Card payments require the last 4 digits of the card. "
                 "Please provide 'last4' in additionalItem.",
-                field="additionalItem.last4"
+                field="additionalItem.last4",
             )
 
         last4 = str(additional_item["last4"])
@@ -121,7 +121,7 @@ class CardPaymentBase(BasePaymentMethod):
         if not re.match(r"^\d{4}$", last4):
             raise PaymentMethodError(
                 f"Invalid card last4 format '{last4}'. Must be exactly 4 digits.",
-                field="additionalItem.last4"
+                field="additionalItem.last4",
             )
 
         return {"last4": last4}
@@ -284,26 +284,25 @@ class BankTransferPayment(BasePaymentMethod):
             raise PaymentMethodError(
                 "Bank transfer requires bank and account_number. "
                 "Please provide them in additionalItem.",
-                field="additionalItem"
+                field="additionalItem",
             )
 
         if "bank" not in additional_item or not additional_item["bank"]:
             raise PaymentMethodError(
-                "Bank transfer requires the bank name. "
-                "Please provide 'bank' in additionalItem.",
-                field="additionalItem.bank"
+                "Bank transfer requires the bank name. " "Please provide 'bank' in additionalItem.",
+                field="additionalItem.bank",
             )
 
         if "account_number" not in additional_item or not additional_item["account_number"]:
             raise PaymentMethodError(
                 "Bank transfer requires the account number. "
                 "Please provide 'account_number' in additionalItem.",
-                field="additionalItem.account_number"
+                field="additionalItem.account_number",
             )
 
         return {
             "bank": str(additional_item["bank"]).strip(),
-            "account_number": str(additional_item["account_number"]).strip()
+            "account_number": str(additional_item["account_number"]).strip(),
         }
 
 
@@ -334,24 +333,24 @@ class ChequePayment(BasePaymentMethod):
             raise PaymentMethodError(
                 "Cheque payment requires bank and cheque_number. "
                 "Please provide them in additionalItem.",
-                field="additionalItem"
+                field="additionalItem",
             )
 
         if "bank" not in additional_item or not additional_item["bank"]:
             raise PaymentMethodError(
                 "Cheque payment requires the bank name. "
                 "Please provide 'bank' in additionalItem.",
-                field="additionalItem.bank"
+                field="additionalItem.bank",
             )
 
         if "cheque_number" not in additional_item or not additional_item["cheque_number"]:
             raise PaymentMethodError(
                 "Cheque payment requires the cheque number. "
                 "Please provide 'cheque_number' in additionalItem.",
-                field="additionalItem.cheque_number"
+                field="additionalItem.cheque_number",
             )
 
         return {
             "bank": str(additional_item["bank"]).strip(),
-            "cheque_number": str(additional_item["cheque_number"]).strip()
+            "cheque_number": str(additional_item["cheque_number"]).strip(),
         }

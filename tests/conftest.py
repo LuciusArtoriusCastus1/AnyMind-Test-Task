@@ -31,6 +31,7 @@ settings = get_settings()
 def event_loop():
     """Create event loop for async tests."""
     import asyncio
+
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
@@ -94,7 +95,6 @@ async def test_client(test_engine) -> AsyncGenerator[AsyncClient, None]:
         class_=AsyncSession,
         expire_on_commit=False,
     )
-
 
     with patch("app.main.AsyncSessionLocal", TestSessionLocal):
         transport = ASGITransport(app=app)

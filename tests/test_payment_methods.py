@@ -40,9 +40,7 @@ class TestCashPayment:
         """Test minimum allowed price modifier (0.9)."""
         handler = CashPayment()
         final_price, points, additional = handler.process(
-            price=Decimal("100.00"),
-            price_modifier=Decimal("0.9"),
-            additional_item=None
+            price=Decimal("100.00"), price_modifier=Decimal("0.9"), additional_item=None
         )
         assert final_price == Decimal("90.00")
         assert points == 5  # 100 * 0.05 = 5
@@ -51,9 +49,7 @@ class TestCashPayment:
         """Test maximum allowed price modifier (1.0)."""
         handler = CashPayment()
         final_price, points, additional = handler.process(
-            price=Decimal("100.00"),
-            price_modifier=Decimal("1.0"),
-            additional_item=None
+            price=Decimal("100.00"), price_modifier=Decimal("1.0"), additional_item=None
         )
         assert final_price == Decimal("100.00")
         assert points == 5
@@ -63,9 +59,7 @@ class TestCashPayment:
         handler = CashPayment()
         with pytest.raises(PaymentMethodError) as exc_info:
             handler.process(
-                price=Decimal("100.00"),
-                price_modifier=Decimal("0.89"),
-                additional_item=None
+                price=Decimal("100.00"), price_modifier=Decimal("0.89"), additional_item=None
             )
         assert "priceModifier" in exc_info.value.field
 
@@ -74,9 +68,7 @@ class TestCashPayment:
         handler = CashPayment()
         with pytest.raises(PaymentMethodError) as exc_info:
             handler.process(
-                price=Decimal("100.00"),
-                price_modifier=Decimal("1.01"),
-                additional_item=None
+                price=Decimal("100.00"), price_modifier=Decimal("1.01"), additional_item=None
             )
         assert "priceModifier" in exc_info.value.field
 
@@ -84,9 +76,7 @@ class TestCashPayment:
         """Test points are calculated from original price."""
         handler = CashPayment()
         final_price, points, _ = handler.process(
-            price=Decimal("200.00"),
-            price_modifier=Decimal("0.9"),
-            additional_item=None
+            price=Decimal("200.00"), price_modifier=Decimal("0.9"), additional_item=None
         )
         # Points from original price: 200 * 0.05 = 10
         assert points == 10
@@ -103,7 +93,7 @@ class TestCashOnDeliveryPayment:
         final_price, points, additional = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("1.0"),
-            additional_item={"courier": "YAMATO"}
+            additional_item={"courier": "YAMATO"},
         )
         assert final_price == Decimal("100.00")
         assert points == 5
@@ -115,7 +105,7 @@ class TestCashOnDeliveryPayment:
         _, _, additional = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("1.02"),
-            additional_item={"courier": "SAGAWA"}
+            additional_item={"courier": "SAGAWA"},
         )
         assert additional["courier"] == "SAGAWA"
 
@@ -125,7 +115,7 @@ class TestCashOnDeliveryPayment:
         _, _, additional = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("1.0"),
-            additional_item={"courier": "yamato"}
+            additional_item={"courier": "yamato"},
         )
         assert additional["courier"] == "YAMATO"
 
@@ -134,9 +124,7 @@ class TestCashOnDeliveryPayment:
         handler = CashOnDeliveryPayment()
         with pytest.raises(PaymentMethodError) as exc_info:
             handler.process(
-                price=Decimal("100.00"),
-                price_modifier=Decimal("1.0"),
-                additional_item={}
+                price=Decimal("100.00"), price_modifier=Decimal("1.0"), additional_item={}
             )
         assert "courier" in exc_info.value.message
 
@@ -147,7 +135,7 @@ class TestCashOnDeliveryPayment:
             handler.process(
                 price=Decimal("100.00"),
                 price_modifier=Decimal("1.0"),
-                additional_item={"courier": "FEDEX"}
+                additional_item={"courier": "FEDEX"},
             )
         assert "Invalid courier" in exc_info.value.message
 
@@ -157,7 +145,7 @@ class TestCashOnDeliveryPayment:
         final_price, _, _ = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("1.02"),
-            additional_item={"courier": "YAMATO"}
+            additional_item={"courier": "YAMATO"},
         )
         assert final_price == Decimal("102.00")
 
@@ -165,19 +153,22 @@ class TestCashOnDeliveryPayment:
 class TestCardPayments:
     """Tests for card payment methods (VISA, MASTERCARD, AMEX, JCB)."""
 
-    @pytest.mark.parametrize("handler_class,min_mod,max_mod,points_rate", [
-        (VisaPayment, "0.95", "1.0", 3),
-        (MastercardPayment, "0.95", "1.0", 3),
-        (AmexPayment, "0.98", "1.01", 2),
-        (JcbPayment, "0.95", "1.0", 5),
-    ])
+    @pytest.mark.parametrize(
+        "handler_class,min_mod,max_mod,points_rate",
+        [
+            (VisaPayment, "0.95", "1.0", 3),
+            (MastercardPayment, "0.95", "1.0", 3),
+            (AmexPayment, "0.98", "1.01", 2),
+            (JcbPayment, "0.95", "1.0", 5),
+        ],
+    )
     def test_valid_card_payment(self, handler_class, min_mod, max_mod, points_rate):
         """Test valid card payment with last4 digits."""
         handler = handler_class()
         final_price, points, additional = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal(min_mod),
-            additional_item={"last4": "1234"}
+            additional_item={"last4": "1234"},
         )
         expected_price = Decimal("100.00") * Decimal(min_mod)
         assert final_price == expected_price.quantize(Decimal("0.01"))
@@ -189,9 +180,7 @@ class TestCardPayments:
         handler = VisaPayment()
         with pytest.raises(PaymentMethodError) as exc_info:
             handler.process(
-                price=Decimal("100.00"),
-                price_modifier=Decimal("0.95"),
-                additional_item={}
+                price=Decimal("100.00"), price_modifier=Decimal("0.95"), additional_item={}
             )
         assert "last4" in exc_info.value.message
 
@@ -202,7 +191,7 @@ class TestCardPayments:
             handler.process(
                 price=Decimal("100.00"),
                 price_modifier=Decimal("0.95"),
-                additional_item={"last4": "12ab"}
+                additional_item={"last4": "12ab"},
             )
         assert "Invalid card last4" in exc_info.value.message
 
@@ -213,7 +202,7 @@ class TestCardPayments:
             handler.process(
                 price=Decimal("100.00"),
                 price_modifier=Decimal("0.95"),
-                additional_item={"last4": "123"}
+                additional_item={"last4": "123"},
             )
         assert "exactly 4 digits" in exc_info.value.message
 
@@ -223,7 +212,7 @@ class TestCardPayments:
         final_price, _, _ = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("1.01"),
-            additional_item={"last4": "1234"}
+            additional_item={"last4": "1234"},
         )
         assert final_price == Decimal("101.00")
 
@@ -231,19 +220,20 @@ class TestCardPayments:
 class TestDigitalPayments:
     """Tests for digital payment methods (LINE_PAY, PAYPAY, GRAB_PAY, POINTS)."""
 
-    @pytest.mark.parametrize("handler_class,points_rate", [
-        (LinePayPayment, 1),
-        (PayPayPayment, 1),
-        (GrabPayPayment, 1),
-        (PointsPayment, 0),
-    ])
+    @pytest.mark.parametrize(
+        "handler_class,points_rate",
+        [
+            (LinePayPayment, 1),
+            (PayPayPayment, 1),
+            (GrabPayPayment, 1),
+            (PointsPayment, 0),
+        ],
+    )
     def test_no_price_modification(self, handler_class, points_rate):
         """Test digital payments don't allow price modification."""
         handler = handler_class()
         final_price, points, _ = handler.process(
-            price=Decimal("100.00"),
-            price_modifier=Decimal("1.0"),
-            additional_item=None
+            price=Decimal("100.00"), price_modifier=Decimal("1.0"), additional_item=None
         )
         assert final_price == Decimal("100.00")
         assert points == points_rate
@@ -253,9 +243,7 @@ class TestDigitalPayments:
         handler = LinePayPayment()
         with pytest.raises(PaymentMethodError):
             handler.process(
-                price=Decimal("100.00"),
-                price_modifier=Decimal("0.99"),
-                additional_item=None
+                price=Decimal("100.00"), price_modifier=Decimal("0.99"), additional_item=None
             )
 
 
@@ -268,7 +256,7 @@ class TestBankTransferPayment:
         final_price, points, additional = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("1.0"),
-            additional_item={"bank": "Kasikorn", "account_number": "1234567890"}
+            additional_item={"bank": "Kasikorn", "account_number": "1234567890"},
         )
         assert final_price == Decimal("100.00")
         assert points == 0
@@ -282,7 +270,7 @@ class TestBankTransferPayment:
             handler.process(
                 price=Decimal("100.00"),
                 price_modifier=Decimal("1.0"),
-                additional_item={"account_number": "1234567890"}
+                additional_item={"account_number": "1234567890"},
             )
         assert "bank" in exc_info.value.message
 
@@ -293,7 +281,7 @@ class TestBankTransferPayment:
             handler.process(
                 price=Decimal("100.00"),
                 price_modifier=Decimal("1.0"),
-                additional_item={"bank": "Kasikorn"}
+                additional_item={"bank": "Kasikorn"},
             )
         assert "account_number" in exc_info.value.message
 
@@ -307,7 +295,7 @@ class TestChequePayment:
         final_price, points, additional = handler.process(
             price=Decimal("100.00"),
             price_modifier=Decimal("0.9"),
-            additional_item={"bank": "Bangkok Bank", "cheque_number": "CH123456"}
+            additional_item={"bank": "Bangkok Bank", "cheque_number": "CH123456"},
         )
         assert final_price == Decimal("90.00")
         assert points == 0
@@ -321,7 +309,7 @@ class TestChequePayment:
             handler.process(
                 price=Decimal("100.00"),
                 price_modifier=Decimal("1.0"),
-                additional_item={"bank": "Bangkok Bank"}
+                additional_item={"bank": "Bangkok Bank"},
             )
         assert "cheque_number" in exc_info.value.message
 

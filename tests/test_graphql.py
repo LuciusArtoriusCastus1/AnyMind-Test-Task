@@ -9,7 +9,6 @@ Tests the complete GraphQL API including:
 These tests use the full application stack with a test database.
 """
 
-
 import pytest
 
 pytestmark = pytest.mark.asyncio
@@ -53,10 +52,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -88,10 +84,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -118,10 +111,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -152,10 +142,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -186,10 +173,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -220,10 +204,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -254,10 +235,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -291,10 +269,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -328,10 +303,7 @@ class TestCreatePaymentMutation:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": mutation}
-        )
+        response = await test_client.post("/graphql", json={"query": mutation})
         assert response.status_code == 200
         data = response.json()
 
@@ -365,10 +337,7 @@ class TestSalesReportQuery:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": query}
-        )
+        response = await test_client.post("/graphql", json={"query": query})
         assert response.status_code == 200
         data = response.json()
 
@@ -398,10 +367,7 @@ class TestSalesReportQuery:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": query}
-        )
+        response = await test_client.post("/graphql", json={"query": query})
         assert response.status_code == 200
         data = response.json()
 
@@ -430,10 +396,7 @@ class TestSalesReportQuery:
                 }
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": query}
-        )
+        response = await test_client.post("/graphql", json={"query": query})
         assert response.status_code == 200
         data = response.json()
 
@@ -451,10 +414,7 @@ class TestSupportedPaymentMethodsQuery:
                 supportedPaymentMethods
             }
         """
-        response = await test_client.post(
-            "/graphql",
-            json={"query": query}
-        )
+        response = await test_client.post("/graphql", json={"query": query})
         assert response.status_code == 200
         data = response.json()
 

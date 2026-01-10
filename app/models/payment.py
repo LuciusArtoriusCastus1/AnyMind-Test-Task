@@ -102,11 +102,7 @@ class Payment(Base):
     # Timestamps
     # datetime column is indexed for efficient time-range queries in sales reports
     datetime = Column(DateTime(timezone=True), nullable=False, index=True)
-    created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     def __repr__(self) -> str:
         """String representation for debugging."""

@@ -95,30 +95,22 @@ class PaymentService:
             PaymentServiceError: If validation fails or processing errors occur
         """
         if not customer_id or not customer_id.strip():
-            raise PaymentServiceError(
-                "Customer ID is required",
-                field="customerId"
-            )
+            raise PaymentServiceError("Customer ID is required", field="customerId")
 
         try:
             price_decimal = Decimal(price)
             if price_decimal <= 0:
-                raise PaymentServiceError(
-                    "Price must be greater than zero",
-                    field="price"
-                )
+                raise PaymentServiceError("Price must be greater than zero", field="price")
         except (InvalidOperation, ValueError):
             raise PaymentServiceError(
-                f"Invalid price format: {price}. Must be a valid decimal number.",
-                field="price"
+                f"Invalid price format: {price}. Must be a valid decimal number.", field="price"
             ) from None
 
         try:
             modifier_decimal = Decimal(str(price_modifier))
         except (InvalidOperation, ValueError):
             raise PaymentServiceError(
-                f"Invalid price modifier: {price_modifier}",
-                field="priceModifier"
+                f"Invalid price modifier: {price_modifier}", field="priceModifier"
             ) from None
 
         try:
@@ -128,7 +120,7 @@ class PaymentService:
             raise PaymentServiceError(
                 f"Invalid payment method: {payment_method}. "
                 f"Valid methods are: {', '.join(valid_methods)}",
-                field="paymentMethod"
+                field="paymentMethod",
             ) from None
 
         try:
@@ -136,7 +128,7 @@ class PaymentService:
             final_price, points, validated_additional_item = handler.process(
                 price=price_decimal,
                 price_modifier=modifier_decimal,
-                additional_item=additional_item
+                additional_item=additional_item,
             )
         except PaymentMethodError as e:
             raise PaymentServiceError(e.message, e.field) from None
@@ -155,10 +147,7 @@ class PaymentService:
         self.db.add(payment)
         await self.db.flush()
 
-        return {
-            "final_price": str(final_price),
-            "points": points
-        }
+        return {"final_price": str(final_price), "points": points}
 
     async def get_sales_report(
         self,
@@ -186,8 +175,7 @@ class PaymentService:
         """
         if start_datetime >= end_datetime:
             raise PaymentServiceError(
-                "Start datetime must be before end datetime",
-                field="startDateTime"
+                "Start datetime must be before end datetime", field="startDateTime"
             )
 
         hour_trunc = func.date_trunc("hour", Payment.datetime)
@@ -209,10 +197,12 @@ class PaymentService:
 
         sales_report = []
         for row in rows:
-            sales_report.append({
-                "datetime": row.hour.isoformat().replace("+00:00", "Z"),
-                "sales": f"{row.total_sales:.2f}",
-                "points": int(row.total_points),
-            })
+            sales_report.append(
+                {
+                    "datetime": row.hour.isoformat().replace("+00:00", "Z"),
+                    "sales": f"{row.total_sales:.2f}",
+                    "points": int(row.total_points),
+                }
+            )
 
         return sales_report

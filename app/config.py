@@ -33,7 +33,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/anymind_pos"
 
     # Test database (PostgreSQL for full compatibility)
-    TEST_DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/anymind_pos_test"
+    TEST_DATABASE_URL: str = (
+        "postgresql+asyncpg://postgres:postgres@localhost:5432/anymind_pos_test"
+    )
 
     class Config:
         env_file = ".env"

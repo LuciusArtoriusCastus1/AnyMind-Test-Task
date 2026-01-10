@@ -25,6 +25,7 @@ import strawberry
 # Enums
 # ============================================================================
 
+
 @strawberry.enum(description="Available payment methods in the system")
 class PaymentMethodEnum(Enum):
     """
@@ -59,6 +60,7 @@ class PaymentMethodEnum(Enum):
 # ============================================================================
 # Input Types
 # ============================================================================
+
 
 @strawberry.input(description="Additional payment-specific information")
 class AdditionalItemInput:
@@ -119,6 +121,7 @@ class SalesReportInput:
 # Output Types
 # ============================================================================
 
+
 @strawberry.type(description="Response for a successful payment")
 class PaymentResponse:
     """
@@ -131,12 +134,8 @@ class PaymentResponse:
     }
     """
 
-    final_price: str = strawberry.field(
-        description="Final price after applying the price modifier"
-    )
-    points: int = strawberry.field(
-        description="Loyalty points awarded for this transaction"
-    )
+    final_price: str = strawberry.field(description="Final price after applying the price modifier")
+    points: int = strawberry.field(description="Loyalty points awarded for this transaction")
 
 
 @strawberry.type(description="Hourly sales data")
@@ -147,15 +146,9 @@ class HourlySales:
     Part of the sales report response.
     """
 
-    datetime: str = strawberry.field(
-        description="Hour boundary in ISO 8601 format"
-    )
-    sales: str = strawberry.field(
-        description="Total sales amount for this hour"
-    )
-    points: int = strawberry.field(
-        description="Total points awarded during this hour"
-    )
+    datetime: str = strawberry.field(description="Hour boundary in ISO 8601 format")
+    sales: str = strawberry.field(description="Total sales amount for this hour")
+    points: int = strawberry.field(description="Total points awarded during this hour")
 
 
 @strawberry.type(description="Sales report response")
@@ -166,9 +159,7 @@ class SalesReportResponse:
     Contains a list of hourly sales data within the requested date range.
     """
 
-    sales: list[HourlySales] = strawberry.field(
-        description="List of hourly sales data"
-    )
+    sales: list[HourlySales] = strawberry.field(description="List of hourly sales data")
 
 
 # ============================================================================
@@ -185,26 +176,21 @@ class ErrorResponse:
     to help clients understand and fix issues.
     """
 
-    error: str = strawberry.field(
-        description="Error type or code"
-    )
-    message: str = strawberry.field(
-        description="Human-readable error description"
-    )
+    error: str = strawberry.field(description="Error type or code")
+    message: str = strawberry.field(description="Human-readable error description")
     field: str | None = strawberry.field(
-        default=None,
-        description="The specific field that caused the error"
+        default=None, description="The specific field that caused the error"
     )
 
 
 PaymentResult = strawberry.union(
     "PaymentResult",
     types=[PaymentResponse, ErrorResponse],
-    description="Result of a payment operation - either success or error"
+    description="Result of a payment operation - either success or error",
 )
 
 SalesReportResult = strawberry.union(
     "SalesReportResult",
     types=[SalesReportResponse, ErrorResponse],
-    description="Result of a sales report query - either data or error"
+    description="Result of a sales report query - either data or error",
 )

@@ -8,7 +8,6 @@ Queries in GraphQL represent read-only operations that fetch data
 without modifying the database state.
 """
 
-
 import strawberry
 from strawberry.types import Info
 

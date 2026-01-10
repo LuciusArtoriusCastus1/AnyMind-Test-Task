@@ -91,7 +91,7 @@ class BasePaymentMethod(ABC):
             raise PaymentMethodError(
                 f"Price modifier must be between {self.min_modifier} and "
                 f"{self.max_modifier} for this payment method. Got: {price_modifier}",
-                field="priceModifier"
+                field="priceModifier",
             )
 
     def calculate_final_price(self, price: Decimal, price_modifier: Decimal) -> Decimal:
@@ -123,10 +123,7 @@ class BasePaymentMethod(ABC):
         return int(price * self.points_rate)
 
     def process(
-        self,
-        price: Decimal,
-        price_modifier: Decimal,
-        additional_item: dict | None
+        self, price: Decimal, price_modifier: Decimal, additional_item: dict | None
     ) -> tuple[Decimal, int, dict]:
         """
         Process a payment with full validation.
