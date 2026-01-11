@@ -30,8 +30,6 @@ from app.payment_methods.methods import (
     VisaPayment,
 )
 
-# Registry mapping PaymentMethod enum values to their strategy classes
-# This makes it trivial to add new payment methods - just add an entry here
 PAYMENT_METHODS: dict[PaymentMethod, type[BasePaymentMethod]] = {
     PaymentMethod.CASH: CashPayment,
     PaymentMethod.CASH_ON_DELIVERY: CashOnDeliveryPayment,
