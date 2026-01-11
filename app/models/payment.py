@@ -95,19 +95,15 @@ class Payment(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     customer_id = Column(String(255), nullable=False, index=True)
 
-    # Monetary values using Numeric for decimal precision
     # precision=10, scale=2 allows values up to 99,999,999.99
     price = Column(Numeric(precision=10, scale=2), nullable=False)
     price_modifier = Column(Numeric(precision=4, scale=2), nullable=False)
     final_price = Column(Numeric(precision=10, scale=2), nullable=False)
     points = Column(Integer, nullable=False, default=0)
 
-    # Payment method stored as string for flexibility (no enum migrations needed)
     payment_method = Column(String(50), nullable=False, index=True)
     additional_item = Column(JSON, nullable=True)
 
-    # Timestamps
-    # datetime column is indexed for efficient time-range queries in sales reports
     datetime = Column(DateTime(timezone=True), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
