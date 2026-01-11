@@ -305,7 +305,7 @@ class ApplePayPayment(BasePaymentMethod):
 ### 3. Register in `app/payment_methods/factory.py`:
 ```python
 from app.payment_methods.methods import ApplePayPayment
-    """Register new method."""
+
 PAYMENT_METHODS: dict[PaymentMethod, type[BasePaymentMethod]] = {
     # ... existing methods ...
     PaymentMethod.APPLE_PAY: ApplePayPayment,
